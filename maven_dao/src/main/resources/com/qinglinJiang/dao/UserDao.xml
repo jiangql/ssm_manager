@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinglinJiang.dao.UserDao">
+
+    <resultMap id="userMap" type="UserInfo">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="phoneNum" column="phoneNum"/>
+        <result property="status" column="status"/>
+        <collection property="roles" column="id" ofType="Role" javaType="java.util.List"
+                    select="com.qinglinJiang.dao.RoleDao.findAllRoleByUserId" fetchType="lazy">
+        </collection>
+
+    </resultMap>
+    <select id="findUserByname" resultMap="userMap">
+      select * from users where username = #{username}
+    </select>
+    <select id="findAll" resultType="com.qinglinJiang.domain.UserInfo">
+        select * from users
+    </select>
+    <select id="findUserById" resultMap="userMap">
+        select * from users where id = #{id}
+    </select>
+    <select id="findUserOtherRoles" resultType="com.qinglinJiang.domain.Role">
+        select * from role where id not in (select roleid from users_role where userid =#{Id})
+    </select>
+    <insert id="saveUser">
+        insert into users (EMAIL, USERNAME, PASSWORD, PHONENUM, STATUS) values (#{email},#{username},#{password},#{phoneNum},#{status})
+    </insert>
+    <insert id="addRoleToUser">
+        insert into users_role (USERID, ROLEID) VALUES (#{userId},#{roleId})
+    </insert>
+</mapper>

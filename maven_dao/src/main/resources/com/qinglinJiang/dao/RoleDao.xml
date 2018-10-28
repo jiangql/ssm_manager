@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinglinJiang.dao.RoleDao">
+    <resultMap id="roleMap" type="Role">
+        <id property="id" column="id"/>
+        <result property="roleName" column="roleName"/>
+        <result property="roleDesc" column="roleDesc"/>
+        <collection property="permissions" column="id" ofType="Permission" fetchType="lazy"
+                    select="com.qinglinJiang.dao.PermissionDao.findAllByUserId">
+        </collection>
+    </resultMap>
+    <insert id="saveRole">
+        insert into role (ROLENAME, ROLEDESC) values (#{roleName},#{roleDesc})
+    </insert>
+    <insert id="addPermissionToRole">
+        insert into role_permission (PERMISSIONID, ROLEID) VALUES (#{permissionId},#{roleId})
+    </insert>
+    <select id="findAllRoleByUserId" resultMap="roleMap">
+        select * from role where id in (select roleid from users_role where userid = #{id})
+    </select>
+    <select id="findAll" resultType="Role">
+        select * from role
+    </select>
+    <select id="findRoleByIdAndAllPermission" resultType="com.qinglinJiang.domain.Permission">
+        select * from permission where id not in (select permissionId from ROLE_PERMISSION where ROLEID=#{id})
+    </select>
+    <select id="findRoleById" resultMap="roleMap">
+        select * from role where id = #{id}
+    </select>
+</mapper>
